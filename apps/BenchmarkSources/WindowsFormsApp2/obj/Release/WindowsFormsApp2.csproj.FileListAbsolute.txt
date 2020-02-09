@@ -1,0 +1,9 @@
+D:\pywinauto\apps\BenchmarkSources\WindowsFormsApp2\obj\Release\WindowsFormsApp2.csproj.GenerateResource.cache
+D:\pywinauto\apps\BenchmarkSources\WindowsFormsApp2\obj\Release\WindowsFormsApp2.csproj.CoreCompileInputs.cache
+D:\pywinauto\apps\BenchmarkSources\WindowsFormsApp2\bin\Release\Benchmark.exe.config
+D:\pywinauto\apps\BenchmarkSources\WindowsFormsApp2\bin\Release\Benchmark.exe
+D:\pywinauto\apps\BenchmarkSources\WindowsFormsApp2\bin\Release\Benchmark.pdb
+D:\pywinauto\apps\BenchmarkSources\WindowsFormsApp2\obj\Release\WindowsFormsApp2.csprojAssemblyReference.cache
+D:\pywinauto\apps\BenchmarkSources\WindowsFormsApp2\obj\Release\Benchmark.Properties.Resources.resources
+D:\pywinauto\apps\BenchmarkSources\WindowsFormsApp2\obj\Release\Benchmark.exe
+D:\pywinauto\apps\BenchmarkSources\WindowsFormsApp2\obj\Release\Benchmark.pdb

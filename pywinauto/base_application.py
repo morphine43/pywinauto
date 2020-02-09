@@ -594,7 +594,7 @@ class WindowSpecification(object):
 
         return control_name_map
 
-    def print_control_identifiers(self, depth=None, filename=None):
+    def print_control_identifiers(self, depth=None, filename=None, rules=[1, 2, 3, 4, 5], need_print=True):
         """
         Prints the 'identifiers'
 
@@ -620,10 +620,15 @@ class WindowSpecification(object):
 
         # Build a dictionary of disambiguated list of control names
         name_ctrl_id_map = findbestmatch.UniqueDict()
+        rule_counter = [ 0, 0, 0, 0, 0 ]
         for index, ctrl in enumerate(all_ctrls):
-            ctrl_names = findbestmatch.get_control_names(ctrl, all_ctrls, txt_ctrls)
+            ctrl_names = findbestmatch.get_control_names(ctrl, all_ctrls, txt_ctrls, rules, rule_counter)
+
             for name in ctrl_names:
-                name_ctrl_id_map[name] = index
+                name_ctrl_id_map.append(name, index, rules, rule_counter)
+
+        # TODO: Remove or add setting for debug print
+        print('Rules use for all controls {}'.format(rule_counter))
 
         # Swap it around so that we are mapped off the control indices
         ctrl_id_name_map = {}
@@ -651,7 +656,8 @@ class WindowSpecification(object):
                     "".format(class_name=ctrl.friendly_class_name(),
                               text=ctrl_text,
                               rect=ctrl.rectangle())
-                output += indent + u'{}'.format(ctrl_id_name_map[ctrl_id])
+                if ctrl_id_name_map.get(ctrl_id) is not None:
+                    output += indent + u'{}'.format(ctrl_id_name_map[ctrl_id])
 
                 title = ctrl_text
                 class_name = ctrl.class_name()
@@ -686,7 +692,8 @@ class WindowSpecification(object):
 
         if filename is None:
             print("Control Identifiers:")
-            print_identifiers([this_ctrl, ])
+            if need_print:
+                print_identifiers([this_ctrl, ])
         else:
             log_file = codecs.open(filename, "w", locale.getpreferredencoding())
 

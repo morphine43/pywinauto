@@ -124,7 +124,7 @@ def find_best_match(search_text, item_texts, items, limit_ratio = .5):
     # Clean each item, make it unique and map to
     # to the item index
     for text, item in zip(item_texts, items):
-        text_item_map[_cut_at_eol(_cut_at_tab(text))] = item
+        text_item_map.append(_cut_at_eol(_cut_at_tab(text)), item)
 
     ratios, best_ratio, best_text = \
         _get_match_ratios(text_item_map.keys(), search_text)
@@ -191,7 +191,7 @@ def get_non_text_control_name(ctrl, controls, text_ctrls):
     # simply look for an instance of the control in the list,
     # we don't use list.index() method as it invokes __eq__
     ctrl_index = 0
-    for i, c in enumerate(controls):
+    for i, c in enumerate(controls, 1):
         if c is ctrl:
             ctrl_index = i
             break
@@ -288,9 +288,10 @@ def get_non_text_control_name(ctrl, controls, text_ctrls):
 
 
 #====================================================================
-def get_control_names(control, allcontrols, textcontrols):
+def get_control_names(control, allcontrols, textcontrols, rules = [1, 2, 3, 4, 5], rule_counter = None):
     """Returns a list of names for this control"""
     names = []
+
 
     # if it has a reference control - then use that
     #if hasattr(control, 'ref') and control.ref:
@@ -298,6 +299,7 @@ def get_control_names(control, allcontrols, textcontrols):
 
     # Add the control based on it's friendly class name
     friendly_class_name = control.friendly_class_name()
+    # TODO: Rule 0?
     names.append(friendly_class_name)
 
     # if it has some character text then add it base on that
@@ -305,12 +307,24 @@ def get_control_names(control, allcontrols, textcontrols):
     cleaned = control.window_text()
     # Todo - I don't like the hardcoded classnames here!
     if cleaned and control.has_title:
-        names.append(cleaned)
-        names.append(cleaned + friendly_class_name)
+        # Rule 1
+        if 1 in rules:
+            names.append(cleaned)
+            if rule_counter is not None:
+                rule_counter[0] += 1
+        # Rule 2
+        if 2 in rules:
+            names.append(cleaned + friendly_class_name)
+            if rule_counter is not None:
+                rule_counter[1] += 1
     elif control.has_title and friendly_class_name != 'TreeView':
         try:
             for text in control.texts()[1:]:
-                names.append(friendly_class_name + text)
+                # Rule 5
+                if 4 in rules:
+                    names.append(friendly_class_name + text)
+                    if rule_counter is not None:
+                        rule_counter[4] += 1
         except Exception:
             #import traceback
             #from .actionlogger import ActionLogger
@@ -320,16 +334,24 @@ def get_control_names(control, allcontrols, textcontrols):
         non_text_names = get_non_text_control_name(control, allcontrols, textcontrols)
 
         # and if one was found - add it
-        if non_text_names:
-            names.extend(non_text_names)
+        # Rule 4
+        if 4 in rules:
+            if non_text_names:
+                names.extend(non_text_names)
+                if rule_counter is not None:
+                    rule_counter[3] += 1
     # it didn't have visible text
     else:
         # so find the text of the nearest text visible control
         non_text_names = get_non_text_control_name(control, allcontrols, textcontrols)
 
         # and if one was found - add it
-        if non_text_names:
-            names.extend(non_text_names)
+        # Rule 4
+        if 4 in rules:
+            if non_text_names:
+                names.extend(non_text_names)
+                if rule_counter is not None:
+                    rule_counter[3] += 1
 
     # return the names - and make sure there are no duplicates or empty values
     cleaned_names = set(names) - set([None, ""])
@@ -341,28 +363,9 @@ class UniqueDict(dict):
 
     """A dictionary subclass that handles making its keys unique"""
 
+    # Rule 3?
     def __setitem__(self, text, item):
         """Set an item of the dictionary"""
-        # this text is already in the map
-        # so we need to make it unique
-        if text in self:
-            # find next unique text after text1
-            unique_text = text
-            counter = 2
-            while unique_text in self:
-                unique_text = text + str(counter)
-                counter += 1
-
-            # now we also need to make sure the original item
-            # is under text0 and text1 also!
-            if text + '0' not in self:
-                dict.__setitem__(self, text+'0', self[text])
-                dict.__setitem__(self, text+'1', self[text])
-
-            # now that we don't need original 'text' anymore
-            # replace it with the uniq text
-            text = unique_text
-
         # add our current item
         dict.__setitem__(self, text, item)
 
@@ -453,6 +456,32 @@ class UniqueDict(dict):
 
         return best_ratio, best_texts
 
+    def append(self, text, item, rules=[3], rule_counter=None):
+        # this text is already in the map
+        # so we need to make it unique
+        if text in self:
+            if 3 in rules:
+                # find next unique text after text1
+                unique_text = text
+                counter = 2
+                while unique_text in self:
+                    unique_text = text + str(counter)
+                    counter += 1
+
+                # now we also need to make sure the original item
+                # is under text0 and text1 also!
+                if text + '0' not in self:
+                    dict.__setitem__(self, text+'0', self[text])
+                    dict.__setitem__(self, text+'1', self[text])
+
+                # now that we don't need original 'text' anymore
+                # replace it with the uniq text
+                text = unique_text
+                self.__setitem__(text, item)
+                if rule_counter is not None:
+                    rule_counter[2] += 1
+        else:
+            self.__setitem__(text, item)
 
 #====================================================================
 def build_unique_dict(controls):
@@ -475,7 +504,7 @@ def build_unique_dict(controls):
 
         # for each of the names
         for name in ctrl_names:
-            name_control_map[name] = ctrl
+            name_control_map.append(name, ctrl)
     return name_control_map
 
 
@@ -517,7 +546,6 @@ def find_best_control_matches(search_text, controls):
     best_ratio_clean_ci, best_texts_clean_ci = \
         name_control_map.find_best_matches(
             search_text, clean = True, ignore_case = True)
-
 
     if best_ratio_ci > best_ratio:
         best_ratio = best_ratio_ci
