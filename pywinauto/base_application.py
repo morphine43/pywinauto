@@ -628,7 +628,8 @@ class WindowSpecification(object):
                 name_ctrl_id_map.append(name, index, rules, rule_counter)
 
         # TODO: Remove or add setting for debug print
-        print('Rules use for all controls {}'.format(rule_counter))
+        if need_print:
+            print('Rules use for all controls {}'.format(rule_counter))
 
         # Swap it around so that we are mapped off the control indices
         ctrl_id_name_map = {}
@@ -691,17 +692,18 @@ class WindowSpecification(object):
                 print_identifiers(ctrl.children(), current_depth + 1, log_func)
 
         if filename is None:
-            print("Control Identifiers:")
             if need_print:
+                print("Control Identifiers:")
                 print_identifiers([this_ctrl, ])
         else:
-            log_file = codecs.open(filename, "w", locale.getpreferredencoding())
+            if need_print:
+                log_file = codecs.open(filename, "w", locale.getpreferredencoding())
 
-            def log_func(msg):
-                log_file.write(str(msg) + os.linesep)
-            log_func("Control Identifiers:")
-            print_identifiers([this_ctrl, ], log_func=log_func)
-            log_file.close()
+                def log_func(msg):
+                    log_file.write(str(msg) + os.linesep)
+                log_func("Control Identifiers:")
+                print_identifiers([this_ctrl, ], log_func=log_func)
+                log_file.close()
 
     print_ctrl_ids = print_control_identifiers
     dump_tree = print_control_identifiers

@@ -191,7 +191,7 @@ def get_non_text_control_name(ctrl, controls, text_ctrls):
     # simply look for an instance of the control in the list,
     # we don't use list.index() method as it invokes __eq__
     ctrl_index = 0
-    for i, c in enumerate(controls, 1):
+    for i, c in enumerate(controls):
         if c is ctrl:
             ctrl_index = i
             break
@@ -321,7 +321,7 @@ def get_control_names(control, allcontrols, textcontrols, rules = [1, 2, 3, 4, 5
         try:
             for text in control.texts()[1:]:
                 # Rule 5
-                if 4 in rules:
+                if 5 in rules:
                     names.append(friendly_class_name + text)
                     if rule_counter is not None:
                         rule_counter[4] += 1
