@@ -128,6 +128,7 @@ def _raise_search_key_error(key, all_props):
 
 #=========================================================================
 def find_elements(**kwargs):
+    #print("find_elements kwargs = {}".format(kwargs))
     backend = kwargs.pop('backend', None)
     parent = kwargs.pop('parent', None)
     handle = kwargs.pop('handle', None)
@@ -182,6 +183,30 @@ def find_elements(**kwargs):
         # check if parent is a handle of element (in case of searching native controls)
         parent = backend_obj.element_info_class(parent)
 
+    rules = []
+
+    #print("All known ct = {}".format(backend_obj.generic_wrapper_class._control_types.keys()))
+    for control_type in backend_obj.generic_wrapper_class._control_types:
+        if (re.match(control_type + r'\d+', best_match)):
+            #print("find_elements {control_type} match {best_match} rule 3".format(control_type = control_type, best_match = best_match))
+            kwargs['control_type'] = control_type
+            rules = [3]
+            break
+        elif (re.match(r'\w*' + control_type + r'$', best_match)):
+            if backend_obj.generic_wrapper_class.control_type_to_cls[control_type].can_be_label:
+                kwargs['control_type'] = control_type
+                #print("find_elements {control_type} match {best_match} rule 2".format(control_type = control_type, best_match = best_match))
+                rules = [2]
+            else:
+                #print("find_elements {control_type} match {best_match} rule 4".format(control_type = control_type, best_match = best_match))
+                rules = [4]
+            break
+        elif not (re.match(control_type, best_match)):
+            rules = [1]
+            break
+
+    if not rules:
+        rules = [1,2,3,4,5]
 
     # create initial list of all elements
     if top_level_only:
@@ -210,6 +235,7 @@ def find_elements(**kwargs):
                                       process=kwargs.get('pid'),
                                       cache_enable=True,
                                       depth=depth)
+        #print("find_elements elements = {}".format(elements))
 
     # early stop
     if not elements:
@@ -258,7 +284,8 @@ def find_elements(**kwargs):
                 # skip invalid handles - they have dissapeared
                 # since the list of elements was retrieved
                 continue
-        elements = findbestmatch.find_best_control_matches(best_match, wrapped_elems)
+        elements = findbestmatch.find_best_control_matches(best_match, wrapped_elems, rules)
+        #print("best_match elements {}".format(elements))
 
         # convert found elements back to ElementInfo
         backup_elements = elements[:]

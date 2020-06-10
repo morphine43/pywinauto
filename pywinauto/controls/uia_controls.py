@@ -57,6 +57,7 @@ class ButtonWrapper(uiawrapper.UIAWrapper):
         'CheckBox',
         'RadioButton',
     ]
+    can_be_label = True
 
     # -----------------------------------------------------------
     def __init__(self, elem):

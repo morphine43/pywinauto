@@ -103,7 +103,7 @@ class AtspiWrapper(BaseWrapper):
     you can click() on any element.
     """
 
-    _control_types = []
+    _control_types = IATSPI().known_control_types
 
     # ------------------------------------------------------------
     def __new__(cls, element_info):

@@ -209,6 +209,8 @@ class WindowSpecification(object):
             # that are required for child controls
             previous_parent = dialog.element_info
             for ctrl_criteria in criteria[1:]:
+                #print("__get_ctrl ctrl_criteria = {}".format(ctrl_criteria))
+
                 ctrl_criteria["top_level_only"] = False
                 if "parent" not in ctrl_criteria:
                     ctrl_criteria["parent"] = previous_parent
@@ -247,6 +249,7 @@ class WindowSpecification(object):
             retry_interval = Timings.window_find_retry
 
         try:
+            #print("__resolve_control criteria = {}".format(criteria))
             ctrl = wait_until_passes(
                 timeout,
                 retry_interval,
@@ -620,16 +623,11 @@ class WindowSpecification(object):
 
         # Build a dictionary of disambiguated list of control names
         name_ctrl_id_map = findbestmatch.UniqueDict()
-        rule_counter = [ 0, 0, 0, 0, 0 ]
         for index, ctrl in enumerate(all_ctrls):
-            ctrl_names = findbestmatch.get_control_names(ctrl, all_ctrls, txt_ctrls, rules, rule_counter)
+            ctrl_names = findbestmatch.get_control_names(ctrl, all_ctrls, txt_ctrls, rules)
 
             for name in ctrl_names:
-                name_ctrl_id_map.append(name, index, rules, rule_counter)
-
-        # TODO: Remove or add setting for debug print
-        if need_print:
-            print('Rules use for all controls {}'.format(rule_counter))
+                name_ctrl_id_map.append(name, index, rules)
 
         # Swap it around so that we are mapped off the control indices
         ctrl_id_name_map = {}

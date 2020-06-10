@@ -191,7 +191,7 @@ def get_non_text_control_name(ctrl, controls, text_ctrls):
     # simply look for an instance of the control in the list,
     # we don't use list.index() method as it invokes __eq__
     ctrl_index = 0
-    for i, c in enumerate(controls):
+    for i, c in enumerate(controls, 1):
         if c is ctrl:
             ctrl_index = i
             break
@@ -288,7 +288,7 @@ def get_non_text_control_name(ctrl, controls, text_ctrls):
 
 
 #====================================================================
-def get_control_names(control, allcontrols, textcontrols, rules = [1, 2, 3, 4, 5], rule_counter = None):
+def get_control_names(control, allcontrols, textcontrols, rules = [1, 2, 3, 4, 5]):
     """Returns a list of names for this control"""
     names = []
 
@@ -310,48 +310,38 @@ def get_control_names(control, allcontrols, textcontrols, rules = [1, 2, 3, 4, 5
         # Rule 1
         if 1 in rules:
             names.append(cleaned)
-            if rule_counter is not None:
-                rule_counter[0] += 1
         # Rule 2
         if 2 in rules:
             names.append(cleaned + friendly_class_name)
-            if rule_counter is not None:
-                rule_counter[1] += 1
     elif control.has_title and friendly_class_name != 'TreeView':
         try:
-            for text in control.texts()[1:]:
+            if 5 in rules:
+                for text in control.texts()[1:]:
                 # Rule 5
-                if 5 in rules:
                     names.append(friendly_class_name + text)
-                    if rule_counter is not None:
-                        rule_counter[4] += 1
         except Exception:
             #import traceback
             #from .actionlogger import ActionLogger
             pass #ActionLogger().log('Warning! Cannot get control.texts()') #\nTraceback:\n' + traceback.format_exc())
 
         # so find the text of the nearest text visible control
-        non_text_names = get_non_text_control_name(control, allcontrols, textcontrols)
+        if 4 in rules:
+            non_text_names = get_non_text_control_name(control, allcontrols, textcontrols)
 
         # and if one was found - add it
         # Rule 4
-        if 4 in rules:
             if non_text_names:
                 names.extend(non_text_names)
-                if rule_counter is not None:
-                    rule_counter[3] += 1
     # it didn't have visible text
     else:
         # so find the text of the nearest text visible control
-        non_text_names = get_non_text_control_name(control, allcontrols, textcontrols)
+        if 4 in rules:
+            non_text_names = get_non_text_control_name(control, allcontrols, textcontrols)
 
         # and if one was found - add it
         # Rule 4
-        if 4 in rules:
             if non_text_names:
                 names.extend(non_text_names)
-                if rule_counter is not None:
-                    rule_counter[3] += 1
 
     # return the names - and make sure there are no duplicates or empty values
     cleaned_names = set(names) - set([None, ""])
@@ -456,7 +446,7 @@ class UniqueDict(dict):
 
         return best_ratio, best_texts
 
-    def append(self, text, item, rules=[3], rule_counter=None):
+    def append(self, text, item, rules=[3]):
         # this text is already in the map
         # so we need to make it unique
         if text in self:
@@ -478,13 +468,11 @@ class UniqueDict(dict):
                 # replace it with the uniq text
                 text = unique_text
                 self.__setitem__(text, item)
-                if rule_counter is not None:
-                    rule_counter[2] += 1
         else:
             self.__setitem__(text, item)
 
 #====================================================================
-def build_unique_dict(controls):
+def build_unique_dict(controls, rules):
     """Build the disambiguated list of controls
 
     Separated out to a different function so that we can get
@@ -500,16 +488,16 @@ def build_unique_dict(controls):
     # collect all the possible names for all controls
     # and build a list of them
     for ctrl in controls:
-        ctrl_names = get_control_names(ctrl, controls, text_ctrls)
+        ctrl_names = get_control_names(ctrl, controls, text_ctrls, rules)
 
         # for each of the names
         for name in ctrl_names:
-            name_control_map.append(name, ctrl)
+            name_control_map.append(name, ctrl, rules)
     return name_control_map
 
 
 #====================================================================
-def find_best_control_matches(search_text, controls):
+def find_best_control_matches(search_text, controls, rules):
     """Returns the control that is the the best match to search_text
 
     This is slightly differnt from find_best_match in that it builds
@@ -521,7 +509,7 @@ def find_best_control_matches(search_text, controls):
     But if there is a ListView (which do not have visible 'text')
     then it will just add "ListView".
     """
-    name_control_map = build_unique_dict(controls)
+    name_control_map = build_unique_dict(controls, rules)
 
 
 #    # collect all the possible names for all controls

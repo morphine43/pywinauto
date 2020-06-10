@@ -54,6 +54,8 @@ timings = {}
 
 i = 2
 elems = 0
+col_count = 1
+seed = 0
 while i < units:
     elems += 1
     i = int(i)
@@ -75,11 +77,11 @@ for mode in range(1, 4):
         print('Start benchmark with {} units, mode {}'.format(str(i), str(mode)))
         print('Start benchmark with {} units, mode {}'.format(str(i), str(mode)), file=result)
         app_start = timer()
-        app = pywinauto.Application(backend='uia').start(cmd_line=os.path.join(benchmark_folder, 'Benchmark.exe') + ' ' + str(mode) + ' ' + str(i) + ' 1')
-        app.Form1.wait('ready', timeout=3600)
+        app = pywinauto.Application(backend='uia').start(cmd_line=os.path.join(benchmark_folder, 'Benchmark.exe') + ' ' + str(mode) + ' ' + str(i) + ' ' + str(col_count) + ' ' + str(seed))
+        app.Dialog.wait('ready', timeout=3600)
         app_ready = timer()
         print('Benchmark ready {}'.format(str(app_ready - app_start)))
-        dlg = app.Form1
+        dlg = app.Dialog
         median_value = 0.0
 
         for j in range(5):

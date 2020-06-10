@@ -178,7 +178,7 @@ class UIAWrapper(WinBaseWrapper):
     you can click() on any element.
     """
 
-    _control_types = []
+    _control_types = IUIA().known_control_types
 
     # ------------------------------------------------------------
     def __new__(cls, element_info):
