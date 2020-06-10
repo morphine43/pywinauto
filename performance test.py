@@ -49,7 +49,7 @@ winforms_folder = os.path.join(
 winforms_folder_32 = winforms_folder
 
 Timings.fast()
-units = 801
+units = 4
 timings = {}
 
 col_count = 1
@@ -58,7 +58,7 @@ seed = 0
 #result = open('result.txt', 'w')
 
 for mode in range(1, 2):
-    i = 800
+    i = 3
     while i < units:
         i = int(i)
         print('Start benchmark with {} units, mode {}'.format(str(i), str(mode)))
@@ -76,6 +76,8 @@ for mode in range(1, 2):
         for j in range(5):
             find_start = timer()
             button = dlg.hWvgX5BS.window_text()
+            #button = dlg.child_window(class_name="Button",
+            #                               name="hWvgX5BS").wrapper_object()
             #edit = dlg.Edit2.window_text()
             #edit = dlg.jolYCYuREdit.window_text()
             find_ready = timer()

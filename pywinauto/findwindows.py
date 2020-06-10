@@ -186,24 +186,25 @@ def find_elements(**kwargs):
     rules = []
 
     #print("All known ct = {}".format(backend_obj.generic_wrapper_class._control_types.keys()))
-    for control_type in backend_obj.generic_wrapper_class._control_types:
-        if (re.match(control_type + r'\d+', best_match)):
-            #print("find_elements {control_type} match {best_match} rule 3".format(control_type = control_type, best_match = best_match))
-            kwargs['control_type'] = control_type
-            rules = [3]
-            break
-        elif (re.match(r'\w*' + control_type + r'$', best_match)):
-            if backend_obj.generic_wrapper_class.control_type_to_cls[control_type].can_be_label:
+    if best_match is not None:
+        for control_type in backend_obj.generic_wrapper_class._control_types:
+            if (re.match(control_type + r'\d+', best_match)):
+                #print("find_elements {control_type} match {best_match} rule 3".format(control_type = control_type, best_match = best_match))
                 kwargs['control_type'] = control_type
-                #print("find_elements {control_type} match {best_match} rule 2".format(control_type = control_type, best_match = best_match))
-                rules = [2]
-            else:
-                #print("find_elements {control_type} match {best_match} rule 4".format(control_type = control_type, best_match = best_match))
-                rules = [4]
-            break
-        elif not (re.match(control_type, best_match)):
-            rules = [1]
-            break
+                rules = [3]
+                break
+            elif (re.match(r'\w*' + control_type + r'$', best_match)):
+                if backend_obj.generic_wrapper_class.control_type_to_cls[control_type].can_be_label:
+                    kwargs['control_type'] = control_type
+                    #print("find_elements {control_type} match {best_match} rule 2".format(control_type = control_type, best_match = best_match))
+                    rules = [2]
+                else:
+                    #print("find_elements {control_type} match {best_match} rule 4".format(control_type = control_type, best_match = best_match))
+                    rules = [4]
+                break
+            elif not (re.match(control_type, best_match)):
+                rules = [1]
+                break
 
     if not rules:
         rules = [1,2,3,4,5]
