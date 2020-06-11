@@ -198,19 +198,15 @@ def find_elements(**kwargs):
                 if backend_obj.generic_wrapper_class.control_type_to_cls[control_type].can_be_label:
                     kwargs['control_type'] = control_type
                     #print("find_elements {control_type} match {best_match} rule 2".format(control_type = control_type, best_match = best_match))
-                    rules = [2]
+                    rules = [1, 2]
                 else:
                     #print("find_elements {control_type} match {best_match} rule 4".format(control_type = control_type, best_match = best_match))
-                    rules = [4]
+                    rules = [1, 4]
                 break
-            # TODO: think how detect first rule
-            #elif not (re.match(control_type, best_match)):
-            #    print("find_elements {control_type} match {best_match} rule 1".format(control_type = control_type, best_match = best_match))
-            #    rules = [1]
-            #    break
 
     if not rules:
         rules = [1,2,3,4,5]
+    #print("find_elements rules = {}".format(rules))
 
     # create initial list of all elements
     if top_level_only:
@@ -239,7 +235,7 @@ def find_elements(**kwargs):
                                       process=kwargs.get('pid'),
                                       cache_enable=True,
                                       depth=depth)
-        #print("find_elements elements = {}".format(elements))
+        # print("find_elements elements = {}".format(elements))
 
     # early stop
     if not elements:
@@ -289,7 +285,7 @@ def find_elements(**kwargs):
                 # since the list of elements was retrieved
                 continue
         elements = findbestmatch.find_best_control_matches(best_match, wrapped_elems, rules)
-        #print("best_match elements {}".format(elements))
+        # print("best_match elements {}".format(elements))
 
         # convert found elements back to ElementInfo
         backup_elements = elements[:]
