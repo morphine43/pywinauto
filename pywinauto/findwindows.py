@@ -186,7 +186,7 @@ def find_elements(**kwargs):
     rules = []
 
     #print("All known ct = {}".format(backend_obj.generic_wrapper_class._control_types.keys()))
-    if best_match is not None:
+    if best_match is not None and hasattr(backend_obj.generic_wrapper_class, '_control_types'):
         for control_type in backend_obj.generic_wrapper_class._control_types:
             if (re.match(control_type + r'\d+', best_match)):
                 #print("find_elements {control_type} match {best_match} rule 3".format(control_type = control_type, best_match = best_match))
