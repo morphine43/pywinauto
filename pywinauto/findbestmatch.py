@@ -291,6 +291,7 @@ def get_non_text_control_name(ctrl, controls, text_ctrls):
 def get_control_names(control, allcontrols, textcontrols, rules = [1, 2, 3, 4, 5]):
     """Returns a list of names for this control"""
     names = []
+    #print("get_control_names rules {}".format(rules))
 
 
     # if it has a reference control - then use that
@@ -308,9 +309,11 @@ def get_control_names(control, allcontrols, textcontrols, rules = [1, 2, 3, 4, 5
     # Todo - I don't like the hardcoded classnames here!
     if cleaned and control.has_title:
         # Rule 1
+        #print("best_match name rule 1 for control <{control}> = {name}".format(control=control, name=cleaned))
         if 1 in rules:
             names.append(cleaned)
         # Rule 2
+        #print("best_match name rule 2 for control <{control}> = {name}".format(control=control, name=cleaned + friendly_class_name))
         if 2 in rules:
             names.append(cleaned + friendly_class_name)
     elif control.has_title and friendly_class_name != 'TreeView':

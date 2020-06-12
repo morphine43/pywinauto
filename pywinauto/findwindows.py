@@ -186,6 +186,10 @@ def find_elements(**kwargs):
     rules = []
 
     #print("All known ct = {}".format(backend_obj.generic_wrapper_class._control_types.keys()))
+    #if hasattr(backend_obj.generic_wrapper_class, '_control_types'):
+    #    print("Backend = {}".format(backend_obj))
+    #    for control in backend_obj.generic_wrapper_class._control_types.keys():
+    #        print("control = {control} can_be_label = {label} has_title = {title}".format(control=control, label=backend_obj.generic_wrapper_class.control_type_to_cls[control].can_be_label, title=backend_obj.generic_wrapper_class.control_type_to_cls[control].has_title))
     if best_match is not None and hasattr(backend_obj.generic_wrapper_class, '_control_types'):
         #print("All known ct = {}".format(backend_obj.generic_wrapper_class._control_types.keys()))
         for control_type in backend_obj.generic_wrapper_class._control_types:
@@ -196,15 +200,16 @@ def find_elements(**kwargs):
                 rules = [3]
                 break
             elif (re.match(r'\w*' + control_type + r'$', best_match)):
-                if backend_obj.generic_wrapper_class.control_type_to_cls[control_type].can_be_label or \
-                   backend_obj.generic_wrapper_class.control_type_to_cls[control_type].has_title:
+                if backend_obj.generic_wrapper_class.control_type_to_cls[control_type].can_be_label and \
+                  not backend_obj.generic_wrapper_class.control_type_to_cls[control_type].has_title:
                     if kwargs.get('control_type') is None:
                         kwargs['control_type'] = control_type
                     #print("find_elements {control_type} match {best_match} rule 2".format(control_type = control_type, best_match = best_match))
-                    rules = [1, 2]
-                else:
+                    rules = [2]
+                elif not backend_obj.generic_wrapper_class.control_type_to_cls[control_type].can_be_label and \
+                  not backend_obj.generic_wrapper_class.control_type_to_cls[control_type].has_title:
                     #print("find_elements {control_type} match {best_match} rule 4".format(control_type = control_type, best_match = best_match))
-                    rules = [1, 4]
+                    rules = [4]
                 break
 
     if not rules:
@@ -288,7 +293,7 @@ def find_elements(**kwargs):
                 # since the list of elements was retrieved
                 continue
         elements = findbestmatch.find_best_control_matches(best_match, wrapped_elems, rules)
-        # print("best_match elements {}".format(elements))
+        #print("best_match elements {}".format(elements))
 
         # convert found elements back to ElementInfo
         backup_elements = elements[:]
