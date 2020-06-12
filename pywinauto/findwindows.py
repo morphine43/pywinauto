@@ -191,12 +191,14 @@ def find_elements(**kwargs):
         for control_type in backend_obj.generic_wrapper_class._control_types:
             if (re.match(control_type + r'\d+', best_match)):
                 #print("find_elements {control_type} match {best_match} rule 3".format(control_type = control_type, best_match = best_match))
-                kwargs['control_type'] = control_type
+                if kwargs.get('control_type') is None:
+                    kwargs['control_type'] = control_type
                 rules = [3]
                 break
             elif (re.match(r'\w*' + control_type + r'$', best_match)):
-                if backend_obj.generic_wrapper_class.control_type_to_cls[control_type].can_be_label:
-                    kwargs['control_type'] = control_type
+                if backend_obj.generic_wrapper_class.control_type_to_cls[control_type].has_title:
+                    if kwargs.get('control_type') is None:
+                        kwargs['control_type'] = control_type
                     #print("find_elements {control_type} match {best_match} rule 2".format(control_type = control_type, best_match = best_match))
                     rules = [1, 2]
                 else:
