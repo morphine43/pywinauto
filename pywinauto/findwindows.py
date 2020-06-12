@@ -196,7 +196,8 @@ def find_elements(**kwargs):
                 rules = [3]
                 break
             elif (re.match(r'\w*' + control_type + r'$', best_match)):
-                if backend_obj.generic_wrapper_class.control_type_to_cls[control_type].has_title:
+                if backend_obj.generic_wrapper_class.control_type_to_cls[control_type].can_be_label or \
+                   backend_obj.generic_wrapper_class.control_type_to_cls[control_type].has_title:
                     if kwargs.get('control_type') is None:
                         kwargs['control_type'] = control_type
                     #print("find_elements {control_type} match {best_match} rule 2".format(control_type = control_type, best_match = best_match))
